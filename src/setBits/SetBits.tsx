@@ -79,7 +79,7 @@ export function SetBits() {
 							<div ref={scope} key={index}>
 								<div
 									className={styles.bitInput}
-									onClick={() => toggleBit(index)}
+									onMouseDown={() => toggleBit(index)}
 								>
 									{bit}
 								</div>
