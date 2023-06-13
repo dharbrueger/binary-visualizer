@@ -9,10 +9,13 @@ import {
 	resetState,
 } from "./setBitsSlice";
 import styles from "./SetBits.module.css";
-import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
+import {
+	AiOutlineReload,
+	AiOutlineInfoCircle
+} from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
 import InfoModal from "./InfoModal";
-import { useAnimate } from "framer-motion"
+import { useAnimate } from "framer-motion";
 
 export function SetBits() {
 	const binary = useAppSelector(selectBinary);
@@ -66,30 +69,34 @@ export function SetBits() {
 
 	return (
 		<>
-			<div ref={scope} className={styles.inputContainer}>
-				{binary.split("").map((bit, index) => (
-					<div ref={scope} key={index} className={styles.bitContainer}>
-						<div
-							className={styles.bitInput}
-							onClick={() => toggleBit(index)}
-						>
-							{bit}
+			<div className={styles.gridContainer}>
+				<div ref={scope} className={styles.valueContainer}>
+					{value}
+				</div>
+				<div>
+					<div ref={scope} className={styles.bitInputContainer}>
+						{binary.split("").map((bit, index) => (
+							<div ref={scope} key={index}>
+								<div
+									className={styles.bitInput}
+									onClick={() => toggleBit(index)}
+								>
+									{bit}
+								</div>
+							</div>
+						))}
+					</div>
+					<div className={styles.buttonContainer}>
+						<div className={styles.icon} onClick={refreshPage}>
+							<AiOutlineReload className={isSpinning ? styles.iconSpin : ""} />
+						</div>
+						<div className={styles.icon} onClick={handleInfoClick}>
+							<AiOutlineInfoCircle />
 						</div>
 					</div>
-				))}
-			</div>
-			<div className={styles.buttonContainer}>
-				<div className={styles.icon} onClick={refreshPage}>
-					<AiOutlineReload className={isSpinning ? styles.iconSpin : ""} />
 				</div>
-				<div className={styles.icon} onClick={handleInfoClick}>
-					<AiOutlineInfoCircle />
-				</div>
-			</div>
-			<div className={styles.displayContainer}>
-				<p>Binary: {binary}</p>
-				<p>Decimal: {value}</p>
 			</div>
 		</>
 	);
 }
+

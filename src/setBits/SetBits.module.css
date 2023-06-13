@@ -1,25 +1,39 @@
-.inputContainer {
-  display: flex;
-  align-items: center;
-  margin-bottom: 10px;
+.gridContainer {
+  display: grid;
+  grid-template-rows: auto auto; /* Set two rows */
+  gap: 50px; /* Adjust the desired spacing between the two rows */
 }
 
-.displayContainer {
-  text-align: left;
+.bitInputContainer {
+  display: flex;
 }
 
 .buttonContainer {
   display: flex;
   justify-content: center;
+  margin-top: 10px;
+}
+
+.valueContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 20px;
+  font-size: 128px;
+  user-select: none;
+}
+
+.valueContainer > * {
+  margin-right: 15px; /* Adjust the desired spacing */
 }
 
 .bitInput {
-  background-color: #f7f9fc;
+  background-color: #1d2126;
   border-radius: 12px;
   padding: 12px;
   margin-right: 5px;
   font-size: 28px;
-  color: #333;
+  color: #f7f9fc;
   outline: none;
   text-align: center;
   cursor: pointer;
