@@ -9,7 +9,9 @@ import {
 	resetState,
 } from "./setBitsSlice";
 import styles from "./SetBits.module.css";
-import { AiOutlineReload } from "react-icons/ai";
+import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
+import { useModal } from "@ebay/nice-modal-react";
+import InfoModal from "./InfoModal";
 
 export function SetBits() {
 	const binary = useAppSelector(selectBinary);
@@ -17,18 +19,24 @@ export function SetBits() {
 
 	const dispatch = useAppDispatch();
 
+	const infoModal = useModal(InfoModal);
+
 	const [isSpinning, setIsSpinning] = useState(false);
 
 	const refreshPage = () => {
 		if (!isSpinning) {
 			setIsSpinning(true);
 			dispatch(resetState());
-	
+
 			// Simulating a delay before resetting the spinning state
 			setTimeout(() => {
 				setIsSpinning(false);
 			}, 300);
 		}
+	};
+
+	const handleInfoClick = () => {
+		infoModal.show();
 	};
 
 	const toggleBit = (index: number, e: React.MouseEvent) => {
@@ -55,9 +63,12 @@ export function SetBits() {
 						</div>
 					</div>
 				))}
-				<div className={styles.refreshIcon} onClick={refreshPage}>
-					<AiOutlineReload className={isSpinning ? styles.iconSpin : ''}/>
+				<div className={styles.icon} onClick={refreshPage}>
+					<AiOutlineReload className={isSpinning ? styles.iconSpin : ""} />
 				</div>
+				<div className={styles.icon} onClick={handleInfoClick}>
+        	<AiOutlineInfoCircle />
+      	</div>
 			</div>
 			<div className={styles.displayContainer}>
 				<p>Binary: {binary}</p>
