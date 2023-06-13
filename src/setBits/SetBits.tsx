@@ -57,14 +57,18 @@ export function SetBits() {
 	};
 
 	const toggleBit = (index: number) => {
-		dispatch(
-			updateBinary(
-				binary.slice(0, index) +
-					(binary[index] === "0" ? "1" : "0") +
-					binary.slice(index + 1)
-			)
-		);
+		const charCode = binary.charCodeAt(index);
+		const toggledCharCode = charCode ^ 1;
+
+		const updatedBinary =
+			binary.substring(0, index) +
+			String.fromCharCode(toggledCharCode) +
+			binary.substring(index + 1);
+
+		dispatch(updateBinary(updatedBinary));
 	};
+
+	const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 	return (
 		<>
@@ -76,12 +80,21 @@ export function SetBits() {
 					<div ref={scope} className={styles.bitInputContainer}>
 						{binary.split("").map((bit, index) => (
 							<div ref={scope} key={index}>
-								<div
-									className={styles.bitInput}
-									onMouseDown={() => toggleBit(index)}
-								>
-									{bit}
-								</div>
+								{isMobile ? (
+									<div
+										className={styles.bitInput}
+										onTouchStart={() => toggleBit(index)}
+									>
+										{bit}
+									</div>
+								) : (
+									<div
+										className={styles.bitInput}
+										onMouseDown={() => toggleBit(index)}
+									>
+										{bit}
+									</div>
+								)}
 								{displayPlaceValues && (
 									<div className={styles.placeValue}>
 										{Math.pow(2, 7 - index)}

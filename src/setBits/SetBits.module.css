@@ -20,7 +20,6 @@
   align-items: center;
   margin-left: 20px;
   font-size: 128px;
-  user-select: none;
 }
 
 .valueContainer > * {
@@ -37,7 +36,6 @@
   outline: none;
   text-align: center;
   cursor: pointer;
-  user-select: none;
 }
 
 .placeValue {

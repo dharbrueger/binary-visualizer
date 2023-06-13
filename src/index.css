@@ -20,6 +20,7 @@ body {
   height: 100vh;
   color: #fff;
   text-align: center;
+  user-select: none;
 }
 
 h1 {
