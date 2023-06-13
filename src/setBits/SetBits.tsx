@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import {
 	flipRightmostInclusiveBits,
@@ -9,6 +9,7 @@ import {
 	resetState,
 } from "./setBitsSlice";
 import styles from "./SetBits.module.css";
+import { AiOutlineReload } from "react-icons/ai";
 
 export function SetBits() {
 	const binary = useAppSelector(selectBinary);
@@ -16,14 +17,28 @@ export function SetBits() {
 
 	const dispatch = useAppDispatch();
 
+	const [isSpinning, setIsSpinning] = useState(false);
+
 	const refreshPage = () => {
-		dispatch(resetState());
+		if (!isSpinning) {
+			setIsSpinning(true);
+			dispatch(resetState());
+	
+			// Simulating a delay before resetting the spinning state
+			setTimeout(() => {
+				setIsSpinning(false);
+			}, 300);
+		}
 	};
 
 	const toggleBit = (index: number, e: React.MouseEvent) => {
-		dispatch(updateBinary(
-			binary.slice(0, index) + (binary[index] === "0" ? "1" : "0") + binary.slice(index + 1)
-		));
+		dispatch(
+			updateBinary(
+				binary.slice(0, index) +
+					(binary[index] === "0" ? "1" : "0") +
+					binary.slice(index + 1)
+			)
+		);
 	};
 
 	return (
@@ -40,12 +55,15 @@ export function SetBits() {
 						</div>
 					</div>
 				))}
+				<div className={styles.refreshIcon} onClick={refreshPage}>
+					<AiOutlineReload className={isSpinning ? styles.iconSpin : ''}/>
+				</div>
 			</div>
 			<div className={styles.displayContainer}>
 				<p>Binary: {binary}</p>
 				<p>Decimal: {value}</p>
 			</div>
-			<button className={styles.refreshButton} onClick={refreshPage}>Reset</button>
 		</>
 	);
 }
+

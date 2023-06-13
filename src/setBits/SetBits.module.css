@@ -4,6 +4,10 @@
   margin-bottom: 10px;
 }
 
+.displayContainer {
+  text-align: left;
+}
+
 .bitInput {
   background-color: #f7f9fc;
   border: none;
@@ -36,19 +40,25 @@
   background-color: #0056b3;
 }
 
-.refreshButton {
-  padding: 10px 20px;
-  background-color: #6e6c6e;
+.refreshIcon {
+  padding: 5px 10px;
   color: #fff;
-  border: none;
-  border-radius: 5px;
   cursor: pointer;
   font-size: 28px;
   transition: background-color 0.3s ease;
 }
 
-.refreshButton:hover {
-  background-color: #0f0f0f;
+.iconSpin {
+  animation: spin .3s ease-in-out infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 p {
