@@ -1,12 +1,5 @@
 # count-set-bits
 
-## Goals
-
-- Learn more about Redux
-- Try out Vite
-- Improve my TypeScript abilities
-- Get used to writing tests (aka write some Jest tests)
-
 ## Inspiration
 
 During a recent job search, I was tasked with writing a program that counted the number of set bits in an unsigned 8-bit integer
@@ -23,3 +16,10 @@ So I thought it would be cool to develop a sort of interactive and visual tool t
 - `build` - build for production
 - `preview` - locally preview production build
 - `test` - launch test runner
+
+## Goals
+
+- Learn more about Redux
+- Try out Vite
+- Improve my TypeScript abilities
+- Get used to writing tests (aka write some Jest tests)
