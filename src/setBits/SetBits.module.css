@@ -1,0 +1,57 @@
+.inputContainer {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.bitInput {
+  background-color: #f7f9fc;
+  border: none;
+  border-radius: 5px;
+  padding: 8px;
+  margin-right: 5px;
+  font-size: 28px;
+  color: #333;
+  outline: none;
+  transition: background-color 0.3s ease;
+  flex-shrink: 0;
+  width: 30px;
+  text-align: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.setButton {
+  padding: 20px 40px;
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 28px;
+  transition: background-color 0.3s ease;
+}
+
+.setButton:hover {
+  background-color: #0056b3;
+}
+
+.refreshButton {
+  padding: 10px 20px;
+  background-color: #6e6c6e;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 28px;
+  transition: background-color 0.3s ease;
+}
+
+.refreshButton:hover {
+  background-color: #0f0f0f;
+}
+
+p {
+  color: #fff;
+  font-size: 28px;
+}
