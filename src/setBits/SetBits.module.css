@@ -8,36 +8,22 @@
   text-align: left;
 }
 
+.buttonContainer {
+  display: flex;
+  justify-content: center;
+}
+
 .bitInput {
   background-color: #f7f9fc;
-  border: none;
-  border-radius: 5px;
-  padding: 8px;
+  border-radius: 12px;
+  padding: 12px;
   margin-right: 5px;
   font-size: 28px;
   color: #333;
   outline: none;
-  transition: background-color 0.3s ease;
-  flex-shrink: 0;
-  width: 30px;
   text-align: center;
   cursor: pointer;
   user-select: none;
-}
-
-.setButton {
-  padding: 20px 40px;
-  background-color: #007bff;
-  color: #fff;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 28px;
-  transition: background-color 0.3s ease;
-}
-
-.setButton:hover {
-  background-color: #0056b3;
 }
 
 .icon {

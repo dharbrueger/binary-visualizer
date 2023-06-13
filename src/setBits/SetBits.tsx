@@ -63,12 +63,14 @@ export function SetBits() {
 						</div>
 					</div>
 				))}
+			</div>
+			<div className={styles.buttonContainer}>
 				<div className={styles.icon} onClick={refreshPage}>
 					<AiOutlineReload className={isSpinning ? styles.iconSpin : ""} />
 				</div>
 				<div className={styles.icon} onClick={handleInfoClick}>
-        	<AiOutlineInfoCircle />
-      	</div>
+					<AiOutlineInfoCircle />
+				</div>
 			</div>
 			<div className={styles.displayContainer}>
 				<p>Binary: {binary}</p>
@@ -77,4 +79,3 @@ export function SetBits() {
 		</>
 	);
 }
-
