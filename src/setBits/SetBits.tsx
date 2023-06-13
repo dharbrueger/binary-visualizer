@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import {
 	flipRightmostInclusiveBits,
@@ -12,6 +12,7 @@ import styles from "./SetBits.module.css";
 import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
 import InfoModal from "./InfoModal";
+import { useAnimate } from "framer-motion"
 
 export function SetBits() {
 	const binary = useAppSelector(selectBinary);
@@ -21,25 +22,39 @@ export function SetBits() {
 
 	const infoModal = useModal(InfoModal);
 
+	const [scope, animate] = useAnimate();
+
 	const [isSpinning, setIsSpinning] = useState(false);
 
-	const refreshPage = () => {
+	const shakeAnimation = {
+		x: [0, -10, 10, -10, 10, 0],
+		transition: {
+			duration: 0.5,
+			ease: "easeInOut",
+		},
+	};
+
+	const refreshPage = useCallback(() => {
 		if (!isSpinning) {
 			setIsSpinning(true);
-			dispatch(resetState());
 
+			if (binary === "00000000") {
+				animate("div", shakeAnimation);
+			}
+
+			dispatch(resetState());
 			// Simulating a delay before resetting the spinning state
 			setTimeout(() => {
 				setIsSpinning(false);
 			}, 300);
 		}
-	};
+	}, [dispatch, isSpinning, binary]);
 
 	const handleInfoClick = () => {
 		infoModal.show();
 	};
 
-	const toggleBit = (index: number, e: React.MouseEvent) => {
+	const toggleBit = (index: number) => {
 		dispatch(
 			updateBinary(
 				binary.slice(0, index) +
@@ -51,13 +66,12 @@ export function SetBits() {
 
 	return (
 		<>
-			<div className={styles.inputContainer}>
+			<div ref={scope} className={styles.inputContainer}>
 				{binary.split("").map((bit, index) => (
-					<div key={index} className={styles.bitContainer}>
+					<div ref={scope} key={index} className={styles.bitContainer}>
 						<div
 							className={styles.bitInput}
-							data-bit={bit}
-							onClick={(e: React.MouseEvent) => toggleBit(index, e)}
+							onClick={() => toggleBit(index)}
 						>
 							{bit}
 						</div>
