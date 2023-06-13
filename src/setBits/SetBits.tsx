@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import {
 	flipRightmostInclusiveBits,
@@ -9,17 +9,16 @@ import {
 	resetState,
 } from "./setBitsSlice";
 import styles from "./SetBits.module.css";
-import {
-	AiOutlineReload,
-	AiOutlineInfoCircle
-} from "react-icons/ai";
+import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
-import InfoModal from "./InfoModal";
+import InfoModal from "../infoModal/InfoModal";
 import { useAnimate } from "framer-motion";
+import { selectDisplayPlaceValues } from "../userSettings/userSettingsSlice";
 
 export function SetBits() {
 	const binary = useAppSelector(selectBinary);
 	const value = useAppSelector(selectValue);
+	const displayPlaceValues = useAppSelector(selectDisplayPlaceValues);
 
 	const dispatch = useAppDispatch();
 
@@ -83,9 +82,15 @@ export function SetBits() {
 								>
 									{bit}
 								</div>
+								{displayPlaceValues && (
+									<div className={styles.placeValue}>
+										{Math.pow(2, 7 - index)}
+									</div>
+								)}
 							</div>
 						))}
 					</div>
+
 					<div className={styles.buttonContainer}>
 						<div className={styles.icon} onClick={refreshPage}>
 							<AiOutlineReload className={isSpinning ? styles.iconSpin : ""} />
@@ -99,4 +104,3 @@ export function SetBits() {
 		</>
 	);
 }
-
