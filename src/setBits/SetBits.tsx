@@ -127,6 +127,12 @@ export function SetBits() {
 		[signed]
 	);
 
+	const handleDecimalBlur = useCallback(() => {
+		if (value === "" || value === "-") {
+			dispatch(updateDecimal({ decimal: "0", signed }));
+		}
+	}, [value]);
+
 	const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 	useEffect(() => {
@@ -140,6 +146,7 @@ export function SetBits() {
 					<Input
 						value={value}
 						onChange={handleDecimalChange}
+						onBlur={handleDecimalBlur}
 						className={styles.decimalInput}
 						bordered={false}
 						maxLength={signed ? 4 : 3}
