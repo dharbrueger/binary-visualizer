@@ -1,8 +1,8 @@
-import { useState, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import {
-	flipRightmostInclusiveBits,
-	unsetRightmostInclusiveBits,
+	// flipRightmostInclusiveBits,
+	// unsetRightmostInclusiveBits,
 	updateBinary,
 	selectBinary,
 	selectValue,
@@ -13,11 +13,16 @@ import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
 import InfoModal from "../infoModal/InfoModal";
 import { motion, useAnimate } from "framer-motion";
-import { selectDisplayPlaceValues } from "../userSettings/userSettingsSlice";
+import {
+	selectDisplayPlaceValues,
+	selectSigned,
+} from "../userSettings/userSettingsSlice";
 
 export function SetBits() {
 	const binary = useAppSelector(selectBinary);
 	const value = useAppSelector(selectValue);
+	const signed = useAppSelector(selectSigned);
+
 	const displayPlaceValues = useAppSelector(selectDisplayPlaceValues);
 
 	const dispatch = useAppDispatch();
@@ -30,7 +35,7 @@ export function SetBits() {
 	const shakeAnimation = {
 		x: [0, -10, 10, -10, 10, 0],
 		transition: {
-			duration: .5,
+			duration: 0.5,
 			ease: "easeInOut",
 		},
 	};
@@ -58,7 +63,7 @@ export function SetBits() {
 	const refreshPage = useCallback(() => {
 		reloadIconAnimate(reloadIconScope.current, spinAnimation);
 
-		if (binary === "00000000") {
+		if (binary.split('').every(bit => bit === '0')) {
 			inputContainerAnimate(inputContainerScope.current, shakeAnimation);
 		}
 
@@ -78,10 +83,14 @@ export function SetBits() {
 			String.fromCharCode(toggledCharCode) +
 			binary.substring(index + 1);
 
-		dispatch(updateBinary(updatedBinary));
+		dispatch(updateBinary({ binary: updatedBinary, signed }));
 	};
 
 	const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+	useEffect(() => {
+		dispatch(updateBinary({ binary, signed }));
+	}, [signed]);
 
 	return (
 		<>
@@ -108,7 +117,7 @@ export function SetBits() {
 								)}
 								{displayPlaceValues && bit === "1" && (
 									<motion.div
-										className={`${styles.placeValue} ${styles.glow}`}
+										className={`${styles.placeValue}`}
 										initial="initial"
 										animate="glow"
 										variants={glowAnimation}
@@ -119,12 +128,16 @@ export function SetBits() {
 											ease: "easeInOut",
 										}}
 									>
-										<span>{Math.pow(2, 7 - index)}</span>
+										<span>
+											{index === 0 && signed && "-"}
+											{Math.pow(2, (binary.length - 1) - index)}
+										</span>
 									</motion.div>
 								)}
 								{displayPlaceValues && bit === "0" && (
 									<div className={styles.placeValue}>
-										<span>{Math.pow(2, 7 - index)}</span>
+										{index === 0 && signed && "-"}
+										<span>{Math.pow(2, (binary.length - 1) - index)}</span>
 									</div>
 								)}
 							</div>
