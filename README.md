@@ -33,8 +33,8 @@ function countSetBits(n):
 ### Project
 
 - Simple example of an 8-bit unsigned integer displayed in binary with toggleable bits and display the decimal value.
+- Allow users to enter digit values (0-255 when unsigned and -128 to 127 when signed) and update the binary value to match.
 - TODO: Include sections that give some background information on the algorithm and whatever concepts one might need in order to understand it.
-- TODO: Allow users to enter digit values (0-255) and update the binary value to match.
 - TODO: Animate a simple implementation of BK's algorithm so that it can be easily visualized and hopefully be easier for people to learn
 
 ### Personal
