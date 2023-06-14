@@ -3,12 +3,12 @@ import { RootState } from "../app/store";
 
 export interface SetBitState {
   binary: string;
-  decimal: number;
+  decimal: string;
 }
 
 const initialState: SetBitState = {
   binary: "00000000",
-  decimal: 0,
+  decimal: "0",
 };
 
 export const setBitSlice = createSlice({
@@ -38,7 +38,22 @@ export const setBitSlice = createSlice({
         decimalValue = -(parseInt(invertedBinary, 2) + 1);
       }
     
-      state.decimal = decimalValue;
+      state.decimal = decimalValue.toString();
+    },
+    
+    updateDecimal: (state, action: PayloadAction<{ decimal: string; signed: boolean; }>) => {
+      const { decimal, signed } = action.payload;
+      state.decimal = decimal;
+    
+      const decimalValue = parseInt(decimal);
+      if (isNaN(decimalValue)) {
+        state.binary = "00000000";
+      } else if (signed && decimalValue < 0) {
+        const binary = (decimalValue & 0xFF).toString(2).padStart(8, "0");
+        state.binary = binary;
+      } else {
+        state.binary = decimalValue.toString(2).padStart(8, "0");
+      }
     },
     resetState: () => {
       return initialState;
@@ -50,6 +65,7 @@ export const {
   // flipRightmostInclusiveBits,
   // unsetRightmostInclusiveBits,
   updateBinary,
+  updateDecimal,
   resetState,
 } = setBitSlice.actions;
 

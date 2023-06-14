@@ -15,6 +15,12 @@
 }
 
 .valueContainer {
+  width: 360px;
+}
+
+.decimalInput {
+  text-align: center;
+  color: #fff;
   font-size: 128px;
 }
 

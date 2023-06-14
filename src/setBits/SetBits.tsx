@@ -1,9 +1,10 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, ChangeEvent } from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import {
 	// flipRightmostInclusiveBits,
 	// unsetRightmostInclusiveBits,
 	updateBinary,
+	updateDecimal,
 	selectBinary,
 	selectValue,
 	resetState,
@@ -11,6 +12,7 @@ import {
 import styles from "./SetBits.module.css";
 import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
+import { Input } from "antd";
 import InfoModal from "../infoModal/InfoModal";
 import { motion, useAnimate } from "framer-motion";
 import {
@@ -63,7 +65,7 @@ export function SetBits() {
 	const refreshPage = useCallback(() => {
 		reloadIconAnimate(reloadIconScope.current, spinAnimation);
 
-		if (binary.split('').every(bit => bit === '0')) {
+		if (binary.split("").every((bit) => bit === "0")) {
 			inputContainerAnimate(inputContainerScope.current, shakeAnimation);
 		}
 
@@ -86,6 +88,45 @@ export function SetBits() {
 		dispatch(updateBinary({ binary: updatedBinary, signed }));
 	};
 
+	const handleDecimalChange = useCallback(
+		(e: ChangeEvent<HTMLInputElement>) => {
+			const { value } = e.target;
+
+			if (value === "") {
+				dispatch(updateDecimal({ decimal: "", signed }));
+				return;
+			}
+
+			const regexSigned = /^-?[0-9]*$/;
+			const regexUnsigned = /^[0-9]*$/;
+
+			if (signed && value === "-") {
+				dispatch(updateDecimal({ decimal: "-", signed }));
+				return;
+			}
+
+			if (signed && !regexSigned.test(value)) {
+				return;
+			}
+
+			if (!signed && !regexUnsigned.test(value)) {
+				return;
+			}
+
+			const decimal = parseInt(value);
+
+			let clampedDecimal;
+			if (signed) {
+				clampedDecimal = Math.max(-128, Math.min(decimal, 127));
+			} else {
+				clampedDecimal = Math.max(0, Math.min(decimal, 255));
+			}
+
+			dispatch(updateDecimal({ decimal: clampedDecimal.toString(), signed }));
+		},
+		[signed]
+	);
+
 	const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
 	useEffect(() => {
@@ -95,7 +136,18 @@ export function SetBits() {
 	return (
 		<>
 			<div className={styles.gridContainer}>
-				<div className={styles.valueContainer}>{value}</div>
+				<div className={styles.valueContainer}>
+					<Input
+						value={value}
+						onChange={handleDecimalChange}
+						className={styles.decimalInput}
+						bordered={false}
+						maxLength={signed ? 4 : 3}
+						pattern="-?[0-9]*"
+						min={signed ? -128 : 0}
+						max={signed ? 127 : 255}
+					/>
+				</div>
 				<div>
 					<div ref={inputContainerScope} className={styles.bitInputContainer}>
 						{binary.split("").map((bit, index) => (
@@ -130,14 +182,14 @@ export function SetBits() {
 									>
 										<span>
 											{index === 0 && signed && "-"}
-											{Math.pow(2, (binary.length - 1) - index)}
+											{Math.pow(2, binary.length - 1 - index)}
 										</span>
 									</motion.div>
 								)}
 								{displayPlaceValues && bit === "0" && (
 									<div className={styles.placeValue}>
 										{index === 0 && signed && "-"}
-										<span>{Math.pow(2, (binary.length - 1) - index)}</span>
+										<span>{Math.pow(2, binary.length - 1 - index)}</span>
 									</div>
 								)}
 							</div>
