@@ -12,7 +12,7 @@ import styles from "./SetBits.module.css";
 import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
 import InfoModal from "../infoModal/InfoModal";
-import { useAnimate } from "framer-motion";
+import { motion, useAnimate } from "framer-motion";
 import { selectDisplayPlaceValues } from "../userSettings/userSettingsSlice";
 
 export function SetBits() {
@@ -24,33 +24,45 @@ export function SetBits() {
 
 	const infoModal = useModal(InfoModal);
 
-	const [scope, animate] = useAnimate();
-
-	const [isSpinning, setIsSpinning] = useState(false);
+	const [inputContainerScope, inputContainerAnimate] = useAnimate();
+	const [reloadIconScope, reloadIconAnimate] = useAnimate();
 
 	const shakeAnimation = {
 		x: [0, -10, 10, -10, 10, 0],
 		transition: {
-			duration: 0.5,
+			duration: .5,
 			ease: "easeInOut",
 		},
 	};
 
+	const spinAnimation = {
+		rotate: [0, 360],
+		transition: {
+			duration: 2,
+			ease: "easeInOut",
+		},
+	};
+
+	const glowAnimation = {
+    textShadow: [
+      "0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
+      "0 0 20px #ff7733, 0 0 40px #ff7733, 0 0 60px #ff7733",
+    ],
+    transition: {
+      duration: 1,
+      yoyo: Infinity,
+    },
+  };
+
 	const refreshPage = useCallback(() => {
-		if (!isSpinning) {
-			setIsSpinning(true);
-
-			if (binary === "00000000") {
-				animate("div", shakeAnimation);
-			}
-
-			dispatch(resetState());
-			// Simulating a delay before resetting the spinning state
-			setTimeout(() => {
-				setIsSpinning(false);
-			}, 300);
+		reloadIconAnimate(reloadIconScope.current, spinAnimation);
+		
+		if (binary === "00000000") {
+			inputContainerAnimate(inputContainerScope.current, shakeAnimation);
 		}
-	}, [dispatch, isSpinning, binary]);
+
+		dispatch(resetState());
+	}, [dispatch, binary]);
 
 	const handleInfoClick = () => {
 		infoModal.show();
@@ -73,13 +85,13 @@ export function SetBits() {
 	return (
 		<>
 			<div className={styles.gridContainer}>
-				<div ref={scope} className={styles.valueContainer}>
+				<div className={styles.valueContainer}>
 					{value}
 				</div>
 				<div>
-					<div ref={scope} className={styles.bitInputContainer}>
+					<div ref={inputContainerScope} className={styles.bitInputContainer}>
 						{binary.split("").map((bit, index) => (
-							<div ref={scope} key={index}>
+							<div key={index}>
 								{isMobile ? (
 									<div
 										className={styles.bitInput}
@@ -95,18 +107,27 @@ export function SetBits() {
 										{bit}
 									</div>
 								)}
-								{displayPlaceValues && (
-									<div className={styles.placeValue}>
-										{Math.pow(2, 7 - index)}
-									</div>
-								)}
+                {displayPlaceValues && bit === "1" && (
+                  <motion.div
+                    className={`${styles.placeValue} ${styles.glow}`}
+                    initial={false}
+                    animate={glowAnimation}
+                  >
+                    <span>{Math.pow(2, 7 - index)}</span>
+                  </motion.div>
+                )}
+                {displayPlaceValues && bit === "0" && (
+                  <div className={styles.placeValue}>
+                    <span>{Math.pow(2, 7 - index)}</span>
+                  </div>
+                )}
 							</div>
 						))}
 					</div>
 
 					<div className={styles.buttonContainer}>
-						<div className={styles.icon} onClick={refreshPage}>
-							<AiOutlineReload className={isSpinning ? styles.iconSpin : ""} />
+						<div ref={reloadIconScope} className={styles.icon} onClick={refreshPage}>
+							<AiOutlineReload />
 						</div>
 						<div className={styles.icon} onClick={handleInfoClick}>
 							<AiOutlineInfoCircle />
