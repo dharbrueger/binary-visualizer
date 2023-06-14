@@ -44,19 +44,20 @@ export function SetBits() {
 	};
 
 	const glowAnimation = {
-    textShadow: [
-      "0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
-      "0 0 20px #ff7733, 0 0 40px #ff7733, 0 0 60px #ff7733",
-    ],
-    transition: {
-      duration: 1,
-      yoyo: Infinity,
-    },
-  };
+		initial: {
+			textShadow: "0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
+		},
+		glow: {
+			textShadow: [
+				"0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
+				"0 0 20px #ff7733, 0 0 40px #ff7733, 0 0 60px #ff7733",
+			],
+		},
+	};
 
 	const refreshPage = useCallback(() => {
 		reloadIconAnimate(reloadIconScope.current, spinAnimation);
-		
+
 		if (binary === "00000000") {
 			inputContainerAnimate(inputContainerScope.current, shakeAnimation);
 		}
@@ -85,9 +86,7 @@ export function SetBits() {
 	return (
 		<>
 			<div className={styles.gridContainer}>
-				<div className={styles.valueContainer}>
-					{value}
-				</div>
+				<div className={styles.valueContainer}>{value}</div>
 				<div>
 					<div ref={inputContainerScope} className={styles.bitInputContainer}>
 						{binary.split("").map((bit, index) => (
@@ -107,26 +106,37 @@ export function SetBits() {
 										{bit}
 									</div>
 								)}
-                {displayPlaceValues && bit === "1" && (
-                  <motion.div
-                    className={`${styles.placeValue} ${styles.glow}`}
-                    initial={false}
-                    animate={glowAnimation}
-                  >
-                    <span>{Math.pow(2, 7 - index)}</span>
-                  </motion.div>
-                )}
-                {displayPlaceValues && bit === "0" && (
-                  <div className={styles.placeValue}>
-                    <span>{Math.pow(2, 7 - index)}</span>
-                  </div>
-                )}
+								{displayPlaceValues && bit === "1" && (
+									<motion.div
+										className={`${styles.placeValue} ${styles.glow}`}
+										initial="initial"
+										animate="glow"
+										variants={glowAnimation}
+										transition={{
+											duration: 1,
+											repeat: Infinity,
+											repeatType: "reverse",
+											ease: "easeInOut",
+										}}
+									>
+										<span>{Math.pow(2, 7 - index)}</span>
+									</motion.div>
+								)}
+								{displayPlaceValues && bit === "0" && (
+									<div className={styles.placeValue}>
+										<span>{Math.pow(2, 7 - index)}</span>
+									</div>
+								)}
 							</div>
 						))}
 					</div>
 
 					<div className={styles.buttonContainer}>
-						<div ref={reloadIconScope} className={styles.icon} onClick={refreshPage}>
+						<div
+							ref={reloadIconScope}
+							className={styles.icon}
+							onClick={refreshPage}
+						>
 							<AiOutlineReload />
 						</div>
 						<div className={styles.icon} onClick={handleInfoClick}>
