@@ -5,7 +5,6 @@
 }
 
 html {
-  background-image: linear-gradient(to bottom right, #1e2228, #0d1117);
   background-color: #0d1117;
 }
 
@@ -21,10 +20,4 @@ body {
   color: #fff;
   text-align: center;
   user-select: none;
-}
-
-h1 {
-  font-size: 32px;
-  font-weight: bold;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
 }

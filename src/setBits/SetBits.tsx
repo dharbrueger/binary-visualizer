@@ -1,4 +1,10 @@
-import { useEffect, useCallback, createContext, useContext, ChangeEvent } from "react";
+import {
+	useEffect,
+	useCallback,
+	createContext,
+	useContext,
+	ChangeEvent,
+} from "react";
 import { useAppSelector, useAppDispatch } from "../app/hooks";
 import {
 	// flipRightmostInclusiveBits,
@@ -28,224 +34,297 @@ interface AnimationHookData {
 	reloadIconAnimate: any;
 }
 
-const AnimationHookContext = createContext<AnimationHookData | undefined>(undefined);
+const AnimationHookContext = createContext<AnimationHookData | undefined>(
+	undefined
+);
 
-export const AnimationHookProvider = ({ children }: { children: React.ReactNode }) => {
+export const AnimationHookProvider = ({
+	children,
+}: {
+	children: React.ReactNode;
+}) => {
 	const dispatch = useAppDispatch();
 	const [inputContainerScope, inputContainerAnimate] = useAnimate();
 	const [reloadIconScope, reloadIconAnimate] = useAnimate();
 
 	const animate: AnimationHookData = {
-    dispatch,
-    inputContainerScope,
-    inputContainerAnimate,
-    reloadIconScope,
-    reloadIconAnimate,
-  };
+		dispatch,
+		inputContainerScope,
+		inputContainerAnimate,
+		reloadIconScope,
+		reloadIconAnimate,
+	};
 
 	return (
 		<AnimationHookContext.Provider value={animate}>
 			{children}
 		</AnimationHookContext.Provider>
 	);
-}
+};
 
 const DecimalValue = () => {
 	const signed = useAppSelector(selectSigned);
 	const value = useAppSelector(selectValue);
-  const { dispatch } = useContext(AnimationHookContext)!;
+	const { dispatch } = useContext(AnimationHookContext)!;
 
-  const handleDecimalChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
+	const handleDecimalChange = useCallback(
+		(e: ChangeEvent<HTMLInputElement>) => {
+			const { value } = e.target;
 
-      if (value === "") {
-        dispatch(updateDecimal({ decimal: "", signed }));
-        return;
-      }
+			if (value === "") {
+				dispatch(updateDecimal({ decimal: "", signed }));
+				return;
+			}
 
-      const regexSigned = /^-?[0-9]*$/;
-      const regexUnsigned = /^[0-9]*$/;
+			const regexSigned = /^-?[0-9]*$/;
+			const regexUnsigned = /^[0-9]*$/;
 
-      if (signed && value === "-") {
-        dispatch(updateDecimal({ decimal: "-", signed }));
-        return;
-      }
+			if (signed && value === "-") {
+				dispatch(updateDecimal({ decimal: "-", signed }));
+				return;
+			}
 
-      if (signed && !regexSigned.test(value)) {
-        return;
-      }
+			if (signed && !regexSigned.test(value)) {
+				return;
+			}
 
-      if (!signed && !regexUnsigned.test(value)) {
-        return;
-      }
+			if (!signed && !regexUnsigned.test(value)) {
+				return;
+			}
 
-      const decimal = parseInt(value);
+			const decimal = parseInt(value);
 
-      let clampedDecimal;
-      if (signed) {
-        clampedDecimal = Math.max(-128, Math.min(decimal, 127));
-      } else {
-        clampedDecimal = Math.max(0, Math.min(decimal, 255));
-      }
+			let clampedDecimal;
+			if (signed) {
+				clampedDecimal = Math.max(-128, Math.min(decimal, 127));
+			} else {
+				clampedDecimal = Math.max(0, Math.min(decimal, 255));
+			}
 
-      dispatch(updateDecimal({ decimal: clampedDecimal.toString(), signed }));
-    },
-    [dispatch, signed]
-  );
+			dispatch(updateDecimal({ decimal: clampedDecimal.toString(), signed }));
+		},
+		[dispatch, signed]
+	);
 
-  const handleDecimalBlur = useCallback(() => {
-    if (value === "" || value === "-") {
-      dispatch(updateDecimal({ decimal: "0", signed }));
-    }
-  }, [dispatch, value, signed]);
+	const handleDecimalBlur = useCallback(() => {
+		if (value === "" || value === "-") {
+			dispatch(updateDecimal({ decimal: "0", signed }));
+		}
+	}, [dispatch, value, signed]);
 
-  return (
-    <div className={styles.valueContainer}>
-      <Input
-        value={value}
-        onChange={handleDecimalChange}
-        onBlur={handleDecimalBlur}
-        className={styles.decimalInput}
-        bordered={false}
-        maxLength={signed ? 4 : 3}
-        pattern="-?[0-9]*"
-        min={signed ? -128 : 0}
-        max={signed ? 127 : 255}
-      />
-    </div>
-  );
+	return (
+		<div className={styles.valueContainer}>
+			<Input
+				value={value}
+				className={styles.decimalInput}
+				onChange={handleDecimalChange}
+				onBlur={handleDecimalBlur}
+				bordered={false}
+			/>
+		</div>
+	);
 };
 
 const BitInput = () => {
 	const binary = useAppSelector(selectBinary);
 	const signed = useAppSelector(selectSigned);
-  const displayPlaceValues = useAppSelector(selectDisplayPlaceValues);
+	const displayPlaceValues = useAppSelector(selectDisplayPlaceValues);
 	const { dispatch, inputContainerScope } = useContext(AnimationHookContext)!;
 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+	const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+	const toggleBit = (index: number) => {
+		const charCode = binary.charCodeAt(index);
+		const toggledCharCode = charCode ^ 1;
+
+		const updatedBinary =
+			binary.substring(0, index) +
+			String.fromCharCode(toggledCharCode) +
+			binary.substring(index + 1);
+
+		dispatch(updateBinary({ binary: updatedBinary, signed }));
+	};
+
+	const MobileBitInput = ({ bit, index, glow }: { bit: string; index: number; glow: any }) => {
+		const shouldAnimate = bit === '1';
+	
+		return (
+			<div>
+				{shouldAnimate ? (
+					<motion.div
+						initial="initial"
+						animate="glow"
+						variants={glow}
+						transition={{
+							duration: 1,
+							repeat: Infinity,
+							repeatType: "reverse",
+							ease: "easeInOut",
+						}}
+					>
+						<div className={styles.bitInput} onTouchStart={() => toggleBit(index)}>
+							{bit}
+						</div>
+					</motion.div>
+				) : (
+					<div className={styles.bitInput} onTouchStart={() => toggleBit(index)}>
+						{bit}
+					</div>
+				)}
+			</div>
+		);
+	};
+	
+	
+	const DesktopBitInput = ({ bit, index, glow }: { bit: string; index: number; glow: any }) => {
+		const shouldAnimate = bit === '1';
+	
+		return (
+			<div>
+				{shouldAnimate ? (
+					<motion.div
+						initial="initial"
+						animate="glow"
+						variants={glow}
+						transition={{
+							duration: 1,
+							repeat: Infinity,
+							repeatType: "reverse",
+							ease: "easeInOut",
+						}}
+					>
+						<div className={styles.bitInput} onMouseDown={() => toggleBit(index)}>
+							{bit}
+						</div>
+					</motion.div>
+				) : (
+					<div className={styles.bitInput} onMouseDown={() => toggleBit(index)}>
+						{bit}
+					</div>
+				)}
+			</div>
+		);
+	};
+	
 
 	//this doesn't necessarily belong here
 	useEffect(() => {
 		dispatch(updateBinary({ binary, signed }));
 	}, [signed]);
 
-  const toggleBit = (index: number) => {
-    const charCode = binary.charCodeAt(index);
-    const toggledCharCode = charCode ^ 1;
 
-    const updatedBinary =
-      binary.substring(0, index) +
-      String.fromCharCode(toggledCharCode) +
-      binary.substring(index + 1);
+	const orangeGlowAnimation = {
+		initial: {
+			textShadow: "0 0 20px #ff7733, 0 0 30px #ff7733, 0 0 40px #ff7733",
+		},
+		glow: {
+			textShadow: [
+				"0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
+				"0 0 30px #ff7733, 0 0 60px #ff7733, 0 0 80px #ff7733",
+			],
+		},
+	};
 
-    dispatch(updateBinary({ binary: updatedBinary, signed }));
-  };
+	const whiteGlowAnimation = {
+		initial: {
+			textShadow: "0 0 1px #ffffff, 0 0 4px #ffffff, 0 0 5px #ffffff",
+		},
+		glow: {
+			textShadow: [
+				"0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff",
+				"0 0 15px #ffffff, 0 0 25px #ffffff, 0 0 35px #ffffff",
+			],
+		},
+	};
 
-  const glowAnimation = {
-    initial: {
-      textShadow: "0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
-    },
-    glow: {
-      textShadow: [
-        "0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
-        "0 0 20px #ff7733, 0 0 40px #ff7733, 0 0 60px #ff7733",
-      ],
-    },
-  };
-
-  return (
-    <div ref={inputContainerScope} className={styles.bitInputContainer}>
-      {binary.split("").map((bit, index) => (
-        <div key={index}>
-          {isMobile ? (
-            <div className={styles.bitInput} onTouchStart={() => toggleBit(index)}>
-              {bit}
-            </div>
-          ) : (
-            <div className={styles.bitInput} onMouseDown={() => toggleBit(index)}>
-              {bit}
-            </div>
-          )}
-          {displayPlaceValues && bit === "1" && (
-            <motion.div
-              className={`${styles.placeValue}`}
-              initial="initial"
-              animate="glow"
-              variants={glowAnimation}
-              transition={{
-                duration: 1,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut",
-              }}
-            >
-              <span>
-                {index === 0 && signed && "-"}
-                {Math.pow(2, binary.length - 1 - index)}
-              </span>
-            </motion.div>
-          )}
-          {displayPlaceValues && bit === "0" && (
-            <div className={styles.placeValue}>
-              {index === 0 && signed && "-"}
-              <span>{Math.pow(2, binary.length - 1 - index)}</span>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
+	return (
+		<div ref={inputContainerScope} className={styles.bitInputContainer}>
+			{binary.split("").map((bit, index) => (
+				<div key={index}>
+					{isMobile ? <MobileBitInput bit={bit} index={index} glow={whiteGlowAnimation}/> : <DesktopBitInput bit={bit} index={index} glow={whiteGlowAnimation}/>}
+					{displayPlaceValues && bit === "1" && (
+						<motion.div
+							className={`${styles.placeValue}`}
+							initial="initial"
+							animate="glow"
+							variants={orangeGlowAnimation}
+							transition={{
+								duration: 1,
+								repeat: Infinity,
+								repeatType: "reverse",
+								ease: "easeInOut",
+							}}
+						>
+							<span>
+								{index === 0 && signed && "-"}
+								{Math.pow(2, binary.length - 1 - index)}
+							</span>
+						</motion.div>
+					)}
+					{displayPlaceValues && bit === "0" && (
+						<div className={styles.placeValue}>
+							{index === 0 && signed && "-"}
+							<span>{Math.pow(2, binary.length - 1 - index)}</span>
+						</div>
+					)}
+				</div>
+			))}
+		</div>
+	);
 };
 
 const Controls = () => {
 	const binary = useAppSelector(selectBinary);
-  const { dispatch, inputContainerScope, reloadIconScope, inputContainerAnimate, reloadIconAnimate } = useContext(
-    AnimationHookContext
-  )!;
+	const {
+		dispatch,
+		inputContainerScope,
+		reloadIconScope,
+		inputContainerAnimate,
+		reloadIconAnimate,
+	} = useContext(AnimationHookContext)!;
 
-  const infoModal = useModal(InfoModal);
+	const infoModal = useModal(InfoModal);
 
-  const handleInfoClick = () => {
-    infoModal.show();
-  };
+	const handleInfoClick = () => {
+		infoModal.show();
+	};
 
-  const shakeAnimation = {
-    x: [0, -10, 10, -10, 10, 0],
-    transition: {
-      duration: 0.5,
-      ease: "easeInOut",
-    },
-  };
+	const shakeAnimation = {
+		x: [0, -10, 10, -10, 10, 0],
+		transition: {
+			duration: 0.5,
+			ease: "easeInOut",
+		},
+	};
 
-  const spinAnimation = {
-    rotate: [0, 360],
-    transition: {
-      duration: 2,
-      ease: "easeInOut",
-    },
-  };
+	const spinAnimation = {
+		rotate: [0, 360],
+		transition: {
+			duration: 2,
+			ease: "easeInOut",
+		},
+	};
 
-  const refreshPage = useCallback(() => {
-    reloadIconAnimate(reloadIconScope.current, spinAnimation);
+	const refreshPage = useCallback(() => {
+		reloadIconAnimate(reloadIconScope.current, spinAnimation);
 
-    if (binary.split("").every((bit) => bit === "0")) {
-      inputContainerAnimate(inputContainerScope.current, shakeAnimation);
-    }
+		if (binary.split("").every((bit) => bit === "0")) {
+			inputContainerAnimate(inputContainerScope.current, shakeAnimation);
+		}
 
-    dispatch(resetState());
-  }, [dispatch, binary]);
+		dispatch(resetState());
+	}, [dispatch, binary]);
 
-  return (
-    <div className={styles.buttonContainer}>
-      <div ref={reloadIconScope} className={styles.icon} onClick={refreshPage}>
-        <AiOutlineReload />
-      </div>
-      <div className={styles.icon} onClick={handleInfoClick}>
-        <AiOutlineInfoCircle />
-      </div>
-    </div>
-  );
+	return (
+		<div className={styles.buttonContainer}>
+			<div ref={reloadIconScope} className={styles.icon} onClick={refreshPage}>
+				<AiOutlineReload />
+			</div>
+			<div className={styles.icon} onClick={handleInfoClick}>
+				<AiOutlineInfoCircle />
+			</div>
+		</div>
+	);
 };
 
 export function SetBits() {

@@ -1,20 +1,22 @@
 .gridContainer {
-  display: grid;
-  grid-template-rows: auto auto;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .bitInputContainer {
-  display: flex;
+  display: inline-flex;
 }
 
 .buttonContainer {
   display: flex;
-  justify-content: center;
   margin-top: 25px;
 }
 
 .valueContainer {
-  width: 360px;
+  display: flex;
 }
 
 .decimalInput {
@@ -29,15 +31,15 @@
   padding: 12px;
   margin-right: 5px;
   font-size: 28px;
-  color: #f7f9fc;
+  color: #b3b3b3;
   outline: none;
   text-align: center;
   cursor: pointer;
 }
 
 .placeValue {
-  margin-top: 5px;
   color: #c98329;
+  margin-top: 5px;
 }
 
 .icon {
@@ -45,18 +47,33 @@
   color: #fff;
   cursor: pointer;
   font-size: 28px;
-  transition: background-color 0.3s ease;
-}
-
-.placeValue {
-  color: #c98329;
 }
 
 /* Extra small devices (phones, 600px and down) */
 @media only screen and (max-width: 600px) {}
 
 /* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {}
+@media only screen and (min-width: 600px) {
+  .gridContainer {
+    gap: 75px;
+  }
+
+  .decimalInput {
+    font-size: 200px;
+  }
+
+  .placeValue {
+    font-size: 24px;
+  }
+
+  .bitInput {
+    font-size: 56px;
+  }
+
+  .icon {
+    font-size: 48px;
+  }
+}
 
 /* Medium devices (landscape tablets, 768px and up) */
 @media only screen and (min-width: 768px) {}
