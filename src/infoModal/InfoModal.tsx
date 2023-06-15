@@ -7,7 +7,9 @@ import {
 	selectDisplayPlaceValues,
 	selectSigned,
 } from "../userSettings/userSettingsSlice";
+import { Tooltip } from "react-tippy";
 import styles from "./InfoModal.module.css";
+import 'react-tippy/dist/tippy.css'
 
 export default NiceModal.create(() => {
 	const modal = useModal();
@@ -44,10 +46,12 @@ export default NiceModal.create(() => {
 						/>
 					</div>
 
-					<div className={styles.setting}>
-						<span>Signed</span>
-						<Switch checked={displaySigned} onChange={handleSignedToggle} />
-					</div>
+					<Tooltip title="Notice: This visualizer is currently using the two's complement representation of negative binary numbers. Other representations exist (sign magnitude, ones' complement, offset binary, etc)">
+						<div className={styles.setting}>
+							<span>Signed</span>
+							<Switch checked={displaySigned} onChange={handleSignedToggle} />
+						</div>
+					</Tooltip>
 				</div>
 			</Modal>
 		</div>
