@@ -20,7 +20,7 @@ import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
 import { Input } from "antd";
 import InfoModal from "../infoModal/InfoModal";
-import { motion, useAnimate } from "framer-motion";
+import { motion, useAnimate, AnimatePresence } from "framer-motion";
 import {
 	selectDisplayPlaceValues,
 	selectSigned,
@@ -28,10 +28,14 @@ import {
 
 interface AnimationHookData {
 	dispatch: any;
-	inputContainerScope: any;
-	inputContainerAnimate: any;
 	reloadIconScope: any;
 	reloadIconAnimate: any;
+	decimalValueScope: any;
+	decimalValueAnimate: any;
+	bitInputScope: any;
+	bitInputAnimate: any;
+	controlsScope: any;
+	controlsAnimate: any;
 }
 
 const AnimationHookContext = createContext<AnimationHookData | undefined>(
@@ -44,15 +48,21 @@ export const AnimationHookProvider = ({
 	children: React.ReactNode;
 }) => {
 	const dispatch = useAppDispatch();
-	const [inputContainerScope, inputContainerAnimate] = useAnimate();
 	const [reloadIconScope, reloadIconAnimate] = useAnimate();
+	const [decimalValueScope, decimalValueAnimate] = useAnimate();
+	const [bitInputScope, bitInputAnimate] = useAnimate();
+	const [controlsScope, controlsAnimate] = useAnimate();
 
 	const animate: AnimationHookData = {
 		dispatch,
-		inputContainerScope,
-		inputContainerAnimate,
 		reloadIconScope,
 		reloadIconAnimate,
+		decimalValueScope,
+		decimalValueAnimate,
+		bitInputScope,
+		bitInputAnimate,
+		controlsScope,
+		controlsAnimate,
 	};
 
 	return (
@@ -65,7 +75,7 @@ export const AnimationHookProvider = ({
 const DecimalValue = () => {
 	const signed = useAppSelector(selectSigned);
 	const value = useAppSelector(selectValue);
-	const { dispatch } = useContext(AnimationHookContext)!;
+	const { dispatch, decimalValueScope } = useContext(AnimationHookContext)!;
 
 	const handleDecimalChange = useCallback(
 		(e: ChangeEvent<HTMLInputElement>) => {
@@ -113,15 +123,24 @@ const DecimalValue = () => {
 	}, [dispatch, value, signed]);
 
 	return (
-		<div className={styles.valueContainer}>
-			<Input
-				value={value}
-				className={styles.decimalInput}
-				onChange={handleDecimalChange}
-				onBlur={handleDecimalBlur}
-				bordered={false}
-			/>
-		</div>
+		<AnimatePresence>
+			<motion.div
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				ref={decimalValueScope}
+				className={styles.valueContainer}
+			>
+				<Input
+					autoFocus
+					value={value}
+					type="number"
+					className={styles.decimalInput}
+					onChange={handleDecimalChange}
+					onBlur={handleDecimalBlur}
+					bordered={false}
+				/>
+			</motion.div>
+		</AnimatePresence>
 	);
 };
 
@@ -129,7 +148,7 @@ const BitInput = () => {
 	const binary = useAppSelector(selectBinary);
 	const signed = useAppSelector(selectSigned);
 	const displayPlaceValues = useAppSelector(selectDisplayPlaceValues);
-	const { dispatch, inputContainerScope } = useContext(AnimationHookContext)!;
+	const { dispatch, bitInputScope } = useContext(AnimationHookContext)!;
 
 	const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
@@ -145,16 +164,27 @@ const BitInput = () => {
 		dispatch(updateBinary({ binary: updatedBinary, signed }));
 	};
 
-	const MobileBitInput = ({ bit, index, glow }: { bit: string; index: number; glow: any }) => {
-		const shouldAnimate = bit === '1';
-	
+	const MobileBitInput = ({ bit, index }: { bit: string; index: number }) => (
+		<div className={styles.bitInput} onTouchStart={() => toggleBit(index)}>
+			{bit}
+		</div>
+	);
+
+	const DesktopBitInput = ({ bit, index }: { bit: string; index: number }) => (
+		<div className={styles.bitInput} onMouseDown={() => toggleBit(index)}>
+			{bit}
+		</div>
+	);
+
+	const PlaceValue = ({ bit, index }: { bit: string; index: number }) => {
 		return (
-			<div>
-				{shouldAnimate ? (
+			<AnimatePresence>
+				{displayPlaceValues && bit === "1" && (
 					<motion.div
+						className={`${styles.placeValue}`}
 						initial="initial"
 						animate="glow"
-						variants={glow}
+						variants={orangeGlowAnimation}
 						transition={{
 							duration: 1,
 							repeat: Infinity,
@@ -162,124 +192,71 @@ const BitInput = () => {
 							ease: "easeInOut",
 						}}
 					>
-						<div className={styles.bitInput} onTouchStart={() => toggleBit(index)}>
-							{bit}
-						</div>
+						<span>
+							{index === 0 && signed && "-"}
+							{Math.pow(2, binary.length - 1 - index)}
+						</span>
 					</motion.div>
-				) : (
-					<div className={styles.bitInput} onTouchStart={() => toggleBit(index)}>
-						{bit}
+				)}
+				{displayPlaceValues && bit === "0" && (
+					<div className={styles.placeValue}>
+						{index === 0 && signed && "-"}
+						<span>{Math.pow(2, binary.length - 1 - index)}</span>
 					</div>
 				)}
-			</div>
+			</AnimatePresence>
 		);
 	};
-	
-	
-	const DesktopBitInput = ({ bit, index, glow }: { bit: string; index: number; glow: any }) => {
-		const shouldAnimate = bit === '1';
-	
-		return (
-			<div>
-				{shouldAnimate ? (
-					<motion.div
-						initial="initial"
-						animate="glow"
-						variants={glow}
-						transition={{
-							duration: 1,
-							repeat: Infinity,
-							repeatType: "reverse",
-							ease: "easeInOut",
-						}}
-					>
-						<div className={styles.bitInput} onMouseDown={() => toggleBit(index)}>
-							{bit}
-						</div>
-					</motion.div>
-				) : (
-					<div className={styles.bitInput} onMouseDown={() => toggleBit(index)}>
-						{bit}
-					</div>
-				)}
-			</div>
-		);
-	};
-	
 
 	//this doesn't necessarily belong here
 	useEffect(() => {
 		dispatch(updateBinary({ binary, signed }));
 	}, [signed]);
 
-
 	const orangeGlowAnimation = {
 		initial: {
-			textShadow: "0 0 20px #ff7733, 0 0 30px #ff7733, 0 0 40px #ff7733",
+			textShadow: "0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
 		},
 		glow: {
 			textShadow: [
 				"0 0 10px #ff7733, 0 0 20px #ff7733, 0 0 30px #ff7733",
-				"0 0 30px #ff7733, 0 0 60px #ff7733, 0 0 80px #ff7733",
-			],
-		},
-	};
-
-	const whiteGlowAnimation = {
-		initial: {
-			textShadow: "0 0 1px #ffffff, 0 0 4px #ffffff, 0 0 5px #ffffff",
-		},
-		glow: {
-			textShadow: [
-				"0 0 10px #ffffff, 0 0 20px #ffffff, 0 0 30px #ffffff",
-				"0 0 15px #ffffff, 0 0 25px #ffffff, 0 0 35px #ffffff",
+				"0 0 20px #ff7733, 0 0 40px #ff7733, 0 0 60px #ff7733",
 			],
 		},
 	};
 
 	return (
-		<div ref={inputContainerScope} className={styles.bitInputContainer}>
-			{binary.split("").map((bit, index) => (
-				<div key={index}>
-					{isMobile ? <MobileBitInput bit={bit} index={index} glow={whiteGlowAnimation}/> : <DesktopBitInput bit={bit} index={index} glow={whiteGlowAnimation}/>}
-					{displayPlaceValues && bit === "1" && (
-						<motion.div
-							className={`${styles.placeValue}`}
-							initial="initial"
-							animate="glow"
-							variants={orangeGlowAnimation}
-							transition={{
-								duration: 1,
-								repeat: Infinity,
-								repeatType: "reverse",
-								ease: "easeInOut",
-							}}
-						>
-							<span>
-								{index === 0 && signed && "-"}
-								{Math.pow(2, binary.length - 1 - index)}
-							</span>
-						</motion.div>
-					)}
-					{displayPlaceValues && bit === "0" && (
-						<div className={styles.placeValue}>
-							{index === 0 && signed && "-"}
-							<span>{Math.pow(2, binary.length - 1 - index)}</span>
-						</div>
-					)}
-				</div>
-			))}
-		</div>
+		<AnimatePresence>
+			<motion.div
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				ref={bitInputScope}
+				className={styles.bitInputContainer}
+			>
+				{binary.split("").map((bit, index) => (
+					<div key={index}>
+						{isMobile ? (
+							<MobileBitInput bit={bit} index={index} />
+						) : (
+							<DesktopBitInput bit={bit} index={index} />
+						)}
+						<PlaceValue bit={bit} index={index} />
+					</div>
+				))}
+			</motion.div>
+		</AnimatePresence>
 	);
 };
 
 const Controls = () => {
 	const binary = useAppSelector(selectBinary);
+
 	const {
 		dispatch,
-		inputContainerScope,
+		controlsScope,
+		bitInputScope,
+		bitInputAnimate,
 		reloadIconScope,
-		inputContainerAnimate,
 		reloadIconAnimate,
 	} = useContext(AnimationHookContext)!;
 
@@ -309,14 +286,14 @@ const Controls = () => {
 		reloadIconAnimate(reloadIconScope.current, spinAnimation);
 
 		if (binary.split("").every((bit) => bit === "0")) {
-			inputContainerAnimate(inputContainerScope.current, shakeAnimation);
+			bitInputAnimate(bitInputScope.current, shakeAnimation);
 		}
 
 		dispatch(resetState());
 	}, [dispatch, binary]);
 
 	return (
-		<div className={styles.buttonContainer}>
+		<div ref={controlsScope} className={styles.controlsContainer}>
 			<div ref={reloadIconScope} className={styles.icon} onClick={refreshPage}>
 				<AiOutlineReload />
 			</div>

@@ -10,7 +10,7 @@
   display: inline-flex;
 }
 
-.buttonContainer {
+.controlsContainer {
   display: flex;
   margin-top: 25px;
 }
@@ -46,14 +46,31 @@
   padding: 5px 10px;
   color: #fff;
   cursor: pointer;
-  font-size: 28px;
+  font-size: 52px;
 }
 
-/* Extra small devices (phones, 600px and down) */
-@media only screen and (max-width: 600px) {}
+/* this hides the number input arrow controls */
+input[type="number"] {
+  -webkit-appearance: textfield;
+     -moz-appearance: textfield;
+          appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none;
+}
 
-/* Small devices (portrait tablets and large phones, 600px and up) */
-@media only screen and (min-width: 600px) {
+/* 400px and up */
+@media only screen and (min-width: 400px) {}
+
+/* 768px and up) */
+@media only screen and (min-width: 768px) {}
+
+/* 992px and up
+@media only screen and (min-width: 992px) {}
+
+/* 1200px and up */
+@media only screen and (min-width: 1200px) {
   .gridContainer {
     gap: 75px;
   }
@@ -74,12 +91,3 @@
     font-size: 48px;
   }
 }
-
-/* Medium devices (landscape tablets, 768px and up) */
-@media only screen and (min-width: 768px) {}
-
-/* Large devices (laptops/desktops, 992px and up) */
-@media only screen and (min-width: 992px) {}
-
-/* Extra large devices (large laptops and desktops, 1200px and up) */
-@media only screen and (min-width: 1200px) {}
