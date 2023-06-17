@@ -86,19 +86,19 @@ const DecimalValue = () => {
 				return;
 			}
 
-			const regexSigned = /^-?[0-9]*$/;
-			const regexUnsigned = /^[0-9]*$/;
-
-			if (signed && value === "-") {
-				dispatch(updateDecimal({ decimal: "-", signed }));
-				return;
-			}
+			const regexSigned = /^-?\d{0,4}$/;
+			const regexUnsigned = /^\d{0,3}$/;
 
 			if (signed && !regexSigned.test(value)) {
 				return;
 			}
 
 			if (!signed && !regexUnsigned.test(value)) {
+				return;
+			}
+
+			if (signed && value === "-") {
+				dispatch(updateDecimal({ decimal: "-", signed }));
 				return;
 			}
 
@@ -133,7 +133,6 @@ const DecimalValue = () => {
 				<Input
 					autoFocus
 					value={value}
-					type="number"
 					className={styles.decimalInput}
 					onChange={handleDecimalChange}
 					onBlur={handleDecimalBlur}
