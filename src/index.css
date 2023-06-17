@@ -20,4 +20,5 @@ body {
   color: #fff;
   text-align: center;
   user-select: none;
+  -webkit-tap-highlight-color: transparent;
 }
