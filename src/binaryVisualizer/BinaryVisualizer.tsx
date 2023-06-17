@@ -14,8 +14,8 @@ import {
 	selectBinary,
 	selectValue,
 	resetState,
-} from "./setBitsSlice";
-import styles from "./SetBits.module.css";
+} from "./binaryVisualizerSlice";
+import styles from "./BinaryVisualizer.module.css";
 import { AiOutlineReload, AiOutlineInfoCircle } from "react-icons/ai";
 import { useModal } from "@ebay/nice-modal-react";
 import { Input } from "antd";
@@ -303,7 +303,7 @@ const Controls = () => {
 	);
 };
 
-export function SetBits() {
+export function BinaryVisualizer() {
 	return (
 		<AnimationHookProvider>
 			<div className={styles.gridContainer}>

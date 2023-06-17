@@ -1,18 +1,18 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../app/store";
 
-export interface SetBitState {
+export interface BinaryVisualizerState {
   binary: string;
   decimal: string;
 }
 
-const initialState: SetBitState = {
+const initialState: BinaryVisualizerState = {
   binary: "00000000",
   decimal: "0",
 };
 
-export const setBitSlice = createSlice({
-  name: "setBit",
+export const binaryVisualizerSlice = createSlice({
+  name: "binaryVisualizer",
   initialState,
   reducers: {
     // flipRightmostInclusiveBits: (state) => {
@@ -40,7 +40,6 @@ export const setBitSlice = createSlice({
     
       state.decimal = decimalValue.toString();
     },
-    
     updateDecimal: (state, action: PayloadAction<{ decimal: string; signed: boolean; }>) => {
       const { decimal, signed } = action.payload;
       state.decimal = decimal;
@@ -67,9 +66,9 @@ export const {
   updateBinary,
   updateDecimal,
   resetState,
-} = setBitSlice.actions;
+} = binaryVisualizerSlice.actions;
 
-export const selectBinary = (state: RootState) => state.setBit.binary;
-export const selectValue = (state: RootState) => state.setBit.decimal;
+export const selectBinary = (state: RootState) => state.binaryVisualizer.binary;
+export const selectValue = (state: RootState) => state.binaryVisualizer.decimal;
 
-export default setBitSlice.reducer;
+export default binaryVisualizerSlice.reducer;

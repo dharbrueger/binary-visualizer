@@ -1,10 +1,10 @@
 import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
-import setBitReducer from "../setBits/setBitsSlice";
+import binaryVisualizerReducer from "../binaryVisualizer/binaryVisualizerSlice";
 import userSettingsReducer from "../userSettings/userSettingsSlice";
 
 export const store = configureStore({
   reducer: {
-    setBit: setBitReducer,
+    binaryVisualizer: binaryVisualizerReducer,
     userSettings: userSettingsReducer,
   },
 });
